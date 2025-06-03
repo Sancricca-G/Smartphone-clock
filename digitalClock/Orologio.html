@@ -1,0 +1,30 @@
+<html>
+<head><link rel="stylesheet" href="style.css"></head>
+<body>
+<div class="case">
+    <div class="title">The Web Clock</div>
+    <div style="height: 40%">
+        <div style="" id="DigitalClock" class="clock" onload="aggiornaOrologio()"></div>
+        <div style="border: 1px solid black; height: 20%"></div>
+        <div style="border: 1px solid red; height: 50%">
+            <div style="border: 1px solid black; height: 100%; width: 33.3333333%; display: inline-block"></div><!--
+                    --><div style="border: 1px solid black; height: 100%; width: 33.3333333%; display: inline-block"></div><!--
+                    --><div style="border: 1px solid black; height: 100%; width: 33.3333333%; display: inline-block"></div>
+        </div>
+    </div>
+    <div style="border: 2px solid black; height: 50%"></div>
+</div>
+<script>
+    function aggiornaOrologio() {
+        const ora = new Date();
+        const ore = String(ora.getHours()).padStart(2, '0');
+        const minuti = String(ora.getMinutes()).padStart(2, '0');
+        const secondi = String(ora.getSeconds()).padStart(2, '0');
+        document.getElementById('DigitalClock').textContent = `${ore}:${minuti}:${secondi}`;
+    }
+    aggiornaOrologio();
+    setInterval(aggiornaOrologio, 1000);
+</script>
+
+</body>
+</html>

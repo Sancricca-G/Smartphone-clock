@@ -1,0 +1,28 @@
+* {
+    box-sizing: border-box;
+}
+
+.case {
+    height: 90%;
+    margin-left: 20%;
+    margin-right: 20%;
+    border-radius: 10px;
+    background-color: #222222
+}
+
+.clock {
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    color: #FF9500;
+    font-size: 60px;
+    font-family: Orbitron;
+    letter-spacing: 10%;
+}
+
+.title {
+    height: 10%;
+    text-align: center;
+    font-size: clamp(1rem, 5vw, 5rem);
+    color: #FF9500
+}
