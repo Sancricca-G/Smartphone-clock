@@ -1,30 +1,31 @@
 <html>
-<head><link rel="stylesheet" href="style.css"></head>
-<body>
-<div class="case">
-    <div class="title">The Web Clock</div>
-    <div style="height: 40%">
-        <div style="" id="DigitalClock" class="clock" onload="aggiornaOrologio()"></div>
-        <div style="border: 1px solid black; height: 20%"></div>
-        <div style="border: 1px solid red; height: 50%">
-            <div style="border: 1px solid black; height: 100%; width: 33.3333333%; display: inline-block"></div><!--
-                    --><div style="border: 1px solid black; height: 100%; width: 33.3333333%; display: inline-block"></div><!--
-                    --><div style="border: 1px solid black; height: 100%; width: 33.3333333%; display: inline-block"></div>
-        </div>
-    </div>
-    <div style="border: 2px solid black; height: 50%"></div>
-</div>
-<script>
-    function aggiornaOrologio() {
-        const ora = new Date();
-        const ore = String(ora.getHours()).padStart(2, '0');
-        const minuti = String(ora.getMinutes()).padStart(2, '0');
-        const secondi = String(ora.getSeconds()).padStart(2, '0');
-        document.getElementById('DigitalClock').textContent = `${ore}:${minuti}:${secondi}`;
-    }
-    aggiornaOrologio();
-    setInterval(aggiornaOrologio, 1000);
-</script>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <script src="script.js" defer></script>
 
-</body>
+    </head>
+    <body>
+        <div class="case">
+            <div class="title">The Web Clock</div>
+                <div>
+                    <div id="DigitalClock" class="clock"></div>
+                    <div class="bordo-nero"></div>
+                    <div class="bordo-rosso">
+                    <div id="bottone-sveglia-container">
+                        <input type="time" id="alarmTime"><br>
+                        <button onclick="setAlarm()">Imposta Sveglia</button>
+                        <div id="statusDiv"></div>
+                    </div><!--
+                    --><div class="bordo-nero" style="width: 33.3333%;"></div><!--
+                    --><div class="bordo-nero" style="width: 33.3333%;"></div>
+                    </div>
+                </div>
+
+                <!-- Qui verranno mostrate le sveglie -->
+            <div id="lista-sveglie">
+                <h3>Sveglie attive</h3>
+                <ul id="alarmList"></ul>
+            </div>
+        </div>
+    </body>
 </html>

@@ -1,28 +1,120 @@
-* {
-    box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+body {
+    background-color: #F7E9DC; /* crema chiaro, simile ma più chiaro del .case */
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
 }
-
 .case {
-    height: 90%;
     margin-left: 20%;
     margin-right: 20%;
     border-radius: 10px;
-    background-color: #222222
+    background-color: #E8A87C; /* pesca morbido */
+    padding: 20px;
+    color: #5D4636; /* marrone morbido */
+}
+
+.title {
+    text-align: center;
+    font-size: clamp(1rem, 5vw, 5rem);
+    color: #F3E9DC; /* bianco crema molto morbido */
+    margin-bottom: 10px;
 }
 
 .clock {
     text-align: center;
-    top: 50%;
-    left: 50%;
-    color: #FF9500;
+    color: #F3E9DC; /* pesca chiaro smorzato */
     font-size: 60px;
-    font-family: Orbitron;
-    letter-spacing: 10%;
+    letter-spacing: 0.1em;
+    font-family: 'Poppins', sans-serif;
+    margin: 20px 0;
 }
 
-.title {
-    height: 10%;
+.bordo-nero {
+    border: transparent; /* grigio caldo morbido */
+    border-radius: 10px;
+}
+
+.bordo-rosso {
+    border: transparent; /* rosso/arancio pastello smorzato */
+    display: flex;
+}
+
+#bottone-sveglia-container {
+    border: transparent; /* grigio caldo morbido */
+    width: 33.3333%;
     text-align: center;
-    font-size: clamp(1rem, 5vw, 5rem);
-    color: #FF9500
+    padding-top: 10px;
+    border-radius: 10px;
+}
+
+#bottone-sveglia-container input[type="time"] {
+    margin-bottom: 8px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #C7B299; /* beige smorzato */
+}
+
+#bottone-sveglia-container button {
+    background-color: #B97A57; /* arancio/marrone caldo morbido */
+    color: #F3E9DC; /* bianco crema */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+#bottone-sveglia-container button:hover {
+    background-color: #A86848; /* tonalità un po’ più scura */
+    color: #F3E9DC;
+}
+
+#statusDiv {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #F3E9DC;
+}
+
+#lista-sveglie {
+    border: 2px solid #A8998E; /* grigio caldo morbido */
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #F3E9DC; /* crema chiaro */
+    color: #5D4636;
+}
+
+#lista-sveglie h3 {
+    margin-top: 0;
+}
+
+#alarmList {
+    list-style: none;
+    padding-left: 0;
+}
+
+#alarmList li {
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #5D4636;
+}
+
+#alarmList button {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    background-color: #B97A57;
+    color: #F3E9DC;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#alarmList button:hover {
+    background-color: #A86848;
+    color: #F3E9DC;
 }
