@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 body {
-    background-color: #F7E9DC; /* crema chiaro, simile ma più chiaro del .case */
+    background-color: #F7E9DC;
     margin: 0;
     font-family: 'Poppins', sans-serif;
 }
@@ -8,21 +8,21 @@ body {
     margin-left: 20%;
     margin-right: 20%;
     border-radius: 10px;
-    background-color: #E8A87C; /* pesca morbido */
+    background-color: #E8A87C;
     padding: 20px;
-    color: #5D4636; /* marrone morbido */
+    color: #5D4636;
 }
 
 .title {
     text-align: center;
     font-size: clamp(1rem, 5vw, 5rem);
-    color: #F3E9DC; /* bianco crema molto morbido */
+    color: #F3E9DC;
     margin-bottom: 10px;
 }
 
 .clock {
     text-align: center;
-    color: #F3E9DC; /* pesca chiaro smorzato */
+    color: #F3E9DC;
     font-size: 60px;
     letter-spacing: 0.1em;
     font-family: 'Poppins', sans-serif;
@@ -30,17 +30,17 @@ body {
 }
 
 .bordo-nero {
-    border: transparent; /* grigio caldo morbido */
+    border: transparent;
     border-radius: 10px;
 }
 
 .bordo-rosso {
-    border: transparent; /* rosso/arancio pastello smorzato */
+    border: transparent;
     display: flex;
 }
 
 #bottone-sveglia-container {
-    border: transparent; /* grigio caldo morbido */
+    border: transparent;
     width: 33.3333%;
     text-align: center;
     padding-top: 10px;
@@ -51,12 +51,12 @@ body {
     margin-bottom: 8px;
     padding: 5px;
     border-radius: 5px;
-    border: 1px solid #C7B299; /* beige smorzato */
+    border: 1px solid #C7B299;
 }
 
 #bottone-sveglia-container button {
-    background-color: #B97A57; /* arancio/marrone caldo morbido */
-    color: #F3E9DC; /* bianco crema */
+    background-color: #B97A57;
+    color: #F3E9DC;
     border: none;
     padding: 10px 20px;
     border-radius: 8px;
@@ -68,7 +68,7 @@ body {
 }
 
 #bottone-sveglia-container button:hover {
-    background-color: #A86848; /* tonalità un po’ più scura */
+    background-color: #A86848;
     color: #F3E9DC;
 }
 
@@ -79,11 +79,11 @@ body {
 }
 
 #lista-sveglie {
-    border: 2px solid #A8998E; /* grigio caldo morbido */
+    border: 2px solid #A8998E;
     overflow-y: auto;
     padding: 10px;
     border-radius: 8px;
-    background-color: #F3E9DC; /* crema chiaro */
+    background-color: #F3E9DC;
     color: #5D4636;
 }
 
