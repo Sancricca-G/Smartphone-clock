@@ -22,14 +22,17 @@ export class Utils {
 
     static playAlarmSound() {
         try {
-            // Tenta di riprodurre un file audio se disponibile
-            const audio = new Audio('alarm.mp3');
-            audio.play().catch(() => {
-                // Fallback: genera beep programmaticamente
-                this.generateBeepSound();
-            });
+            const audio = new Audio('BrainFart.mp3');
+            audio.play()
+                .then(() => {
+                    console.log("Audio riprodotto con successo");
+                })
+                .catch((err) => {
+                    console.warn("Errore nella riproduzione:", err);
+                    this.generateBeepSound();
+                });
         } catch (error) {
-            // Se Audio non � supportato, usa il beep generato
+            console.error("Errore generale nel suono sveglia:", error);
             this.generateBeepSound();
         }
     }
