@@ -1,11 +1,11 @@
-// Utils Module - Funzioni di utilità condivise
+// Utils Module - Funzioni di utilitï¿½ condivise
 export class Utils {
     static formatTimeUnit(unit) {
         return unit.toString().padStart(2, '0');
     }
 
     static getCurrentDayName() {
-        const days = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+        const days = ['Domenica', 'Lunedi', 'Martedi', 'Mercoledi', 'Giovedi', 'Venerdi', 'Sabato'];
         return days[new Date().getDay()];
     }
 
@@ -29,7 +29,7 @@ export class Utils {
                 this.generateBeepSound();
             });
         } catch (error) {
-            // Se Audio non è supportato, usa il beep generato
+            // Se Audio non ï¿½ supportato, usa il beep generato
             this.generateBeepSound();
         }
     }

@@ -117,7 +117,7 @@ export class AlarmManager {
 
     startChecking() {
         // Controlla le sveglie ogni 30 secondi per efficienza
-        this.checkInterval = setInterval(() => this.checkAlarms(), 30000);
+        this.checkInterval = setInterval(() => this.checkAlarms(), 1500);
 
         // Controllo immediato all'avvio
         this.checkAlarms();
@@ -135,14 +135,13 @@ export class AlarmManager {
                 if (shouldTrigger) {
                     this.triggerAlarm(alarm);
 
-                    // Rimuovi sveglia "una tantum" dopo che è suonata
-                    if (alarm.repeat === 'Una sola volta') {
-                        setTimeout(() => this.remove(alarm.id), 1000);
-                    }
+                    // Rimuovi la sveglia dopo che è suonata (una sola volta anche se settimanale)
+                    setTimeout(() => this.remove(alarm.id), 1000);
                 }
             }
         });
     }
+
 
     shouldTriggerAlarm(alarm, currentDay) {
         return alarm.repeat === 'Una sola volta' || alarm.repeat === currentDay;

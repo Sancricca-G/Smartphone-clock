@@ -71,7 +71,7 @@ export class Timer {
         }
     }
 
-    // Funzioni di utilit‡ per controllare lo stato
+    // Funzioni di utilit√† per controllare lo stato
     isRunning() {
         return this.running;
     }
