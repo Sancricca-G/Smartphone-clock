@@ -180,8 +180,11 @@ export class AlarmManager {
 
     showStatus(message, type) {
         this.statusElement.textContent = message;
-        this.statusElement.style.color = type === 'error' ? '#ff6b6b' : '#4ecdc4';
-
+        if (type === 'error') {
+            this.statusElement.style.color = '#ff6b6b';
+        } else {
+            this.statusElement.style.color = '#fff';
+        }
         // Pulisci il messaggio dopo 4 secondi
         setTimeout(() => {
             this.statusElement.textContent = '';
