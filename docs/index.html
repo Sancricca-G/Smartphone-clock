@@ -1,31 +1,63 @@
-<html>
-    <head>
-        <link rel="stylesheet" href="style.css">
-        <script src="script.js" defer></script>
+﻿<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Clock</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="case">
+        <div class="title">The Web Clock</div>
+        <div id="DigitalClock" class="clock"></div>
 
-    </head>
-    <body>
-        <div class="case">
-            <div class="title">The Web Clock</div>
+        <div class="controls-container">
+            <div class="control-section">
+                <h3>⏰ Sveglia</h3>
+                <input type="time" id="alarmTime">
+                <select id="alarmRepeat">
+                    <option value="Una sola volta">Una sola volta</option>
+                    <option value="Lunedi">Lunedì</option>
+                    <option value="Martedi">Martedì</option>
+                    <option value="Mercoledi">Mercoledì</option>
+                    <option value="Giovedi">Giovedì</option>
+                    <option value="Venerdi">Venerdì</option>
+                    <option value="Sabato">Sabato</option>
+                    <option value="Domenica">Domenica</option>
+                </select>
+                <button id="setAlarmBtn">Imposta Sveglia</button>
+                <div id="alarmStatus" class="status"></div>
+            </div>
+
+            <div class="control-section">
+                <h3>⏲️ Timer</h3>
+                <input type="number" id="timerMinutes" placeholder="Minuti" min="0" max="999">
                 <div>
-                    <div id="DigitalClock" class="clock"></div>
-                    <div class="bordo-nero"></div>
-                    <div class="bordo-rosso">
-                    <div id="bottone-sveglia-container">
-                        <input type="time" id="alarmTime"><br>
-                        <button onclick="setAlarm()">Imposta Sveglia</button>
-                        <div id="statusDiv"></div>
-                    </div><!--
-                    --><div class="bordo-nero" style="width: 33.3333%;"></div><!--
-                    --><div class="bordo-nero" style="width: 33.3333%;"></div>
-                    </div>
+                    <button id="startTimerBtn">Avvia</button>
+                    <button id="pauseTimerBtn">Pausa</button>
+                    <button id="resumeTimerBtn">Riprendi</button>
+                    <button id="resetTimerBtn">Reset</button>
                 </div>
+                <div id="timerDisplay" class="display">00:00</div>
+            </div>
 
-                <!-- Qui verranno mostrate le sveglie -->
-            <div id="lista-sveglie">
-                <h3>Sveglie attive</h3>
-                <ul id="alarmList"></ul>
+            <div class="control-section">
+                <h3>⏱️ Cronometro</h3>
+                <div>
+                    <button id="startStopwatchBtn">Avvia</button>
+                    <button id="stopStopwatchBtn">Stop</button>
+                    <button id="resetStopwatchBtn">Reset</button>
+                </div>
+                <div id="stopwatchDisplay" class="display">00:00.0</div>
             </div>
         </div>
-    </body>
+
+        <div class="alarm-list">
+            <h3>Sveglie attive</h3>
+            <div id="alarmList"></div>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
 </html>
