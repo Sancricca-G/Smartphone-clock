@@ -1,4 +1,4 @@
-import { Utils } from './utils.js';
+import { Utils } from './Utils.js';
 
 // Timer Module - Gestisce il timer con conto alla rovescia
 export class Timer {

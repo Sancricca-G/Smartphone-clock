@@ -1,4 +1,4 @@
-import { Utils } from './utils.js';
+import { Utils } from './Utils.js';
 
 // Clock Module - Gestisce l'orologio digitale
 export class Clock {

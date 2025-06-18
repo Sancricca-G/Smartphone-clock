@@ -1,8 +1,8 @@
-﻿import { Clock } from './clock.js';
-import { Stopwatch } from './stopwatch.js';
-import { Timer } from './timer.js';
-import { AlarmManager } from './alarm.js';
-import { Utils } from './utils.js';
+﻿import { Clock } from './Clock.js';
+import { Stopwatch } from './Stopwatch.js';
+import { Timer } from './Timer.js';
+import { AlarmManager } from './Alarm.js';
+import { Utils } from './Utils.js';
 
 // Main Application
 document.addEventListener('DOMContentLoaded', () => {
