@@ -32,19 +32,16 @@ export class AlarmManager {
     }
 
     add(time, repeat) {
-        // Validazione input
         if (!Utils.validateTimeInput(time)) {
             this.showStatus('Inserisci un orario valido (HH:MM).', 'error');
             return false;
         }
 
-        // Controllo duplicati
-        if (this.alarms.some(a => a.time === time)) {
-            this.showStatus('Sveglia già impostata per quell\'ora.', 'error');
+        if (this.alarms.some(a => a.time === time && a.repeat === repeat)) {
+            this.showStatus('Sveglia già impostata per quell\'ora e per quel giorno.', 'error');
             return false;
         }
 
-        // Crea nuova sveglia
         const alarm = {
             id: Date.now(),
             time,
