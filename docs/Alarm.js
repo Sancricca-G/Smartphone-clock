@@ -38,9 +38,15 @@ export class AlarmManager {
             return false;
         }
 
-        // Controllo duplicati
-        if (this.alarms.some(a => a.time === time)) {
-            this.showStatus('Sveglia già impostata per quell\'ora.', 'error');
+        // Controllo duplicati migliorato
+        const isDuplicate = this.alarms.some(a =>
+            a.time === time && (
+                (a.repeat === 'Una sola volta' && repeat === 'Una sola volta') ||
+                (a.repeat === repeat && repeat !== 'Una sola volta')
+            )
+        );
+        if (isDuplicate) {
+            this.showStatus('Sveglia già impostata per quell\'ora e giorno.', 'error');
             return false;
         }
 

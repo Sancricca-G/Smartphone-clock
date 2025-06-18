@@ -52,12 +52,178 @@
             </div>
         </div>
 
-        <div class="alarm-list">
-            <h3>Sveglie attive</h3>
-            <div id="alarmList"></div>
+        <div class="bottom-panels">
+            <div class="alarm-list">
+                <h3>Sveglie attive</h3>
+                <div id="alarmList"></div>
+            </div>
+            <div class="tomato-timer-section">
+                <h3>Timer Pomodoro</h3>
+                <div id="pomodoroTimerDisplay"></div>
+                <button id="startPomodoroBtn" class="pomodoro-btn">Avvia Pomodoro</button>
+            </div>
+            <div class="custom-panel">
+                <h3>Personalizzato</h3>
+                <div id="customPanelContent"></div>
+            </div>
         </div>
+
+        <!-- Overlay Pomodoro nascosto -->
+        <div id="pomodoroOverlay" class="pomodoro-overlay" style="display:none;">
+            <div class="container pomodoro-modal">
+                <button id="closePomodoroOverlay" class="close-pomodoro">&times;</button>
+                <h1>Modalità Pomodoro</h1>
+                <div>
+                    <label for="work">Durata lavoro (min):</label>
+                    <input id="work" type="number" min="1" value="25">
+                    <label for="break">Durata pausa (min):</label>
+                    <input id="break" type="number" min="1" value="5">
+                    <label for="cycles">Numero di cicli:</label>
+                    <input id="cycles" type="number" min="1" value="4">
+                </div>
+                <div id="cycle-info"></div>
+                <div id="timer">25:00</div>
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="pomodoro-btns">
+                    <div class="btn-group">
+                        <button id="startPomodoroTimerBtn" class="pomodoro-btn">AVVIA</button>
+                    </div>
+                    <div class="btn-group">
+                        <button id="resetPomodoroBtn" class="pomodoro-btn">RESET</button>
+                    </div>
+                </div>
+                <audio id="beep-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+            </div>
+        </div>
+
     </div>
 
     <script type="module" src="main.js"></script>
+    <script>
+    // Gestione apertura/chiusura overlay Pomodoro
+    document.getElementById('startPomodoroBtn').onclick = function() {
+        document.getElementById('pomodoroOverlay').style.display = 'flex';
+        window.resetPomodoro(); // resetta ogni volta che si apre
+    };
+    document.getElementById('closePomodoroOverlay').onclick = function() {
+        document.getElementById('pomodoroOverlay').style.display = 'none';
+    };
+
+    // Logica Pomodoro (adattata da pomodoro.html)
+    let workDuration = 25, breakDuration = 5, totalCycles = 4;
+    let currentCycle = 1, isRunning = false, isWork = true, timer = null, secondsLeft = 0;
+    const timerEl = document.getElementById('timer');
+    const cycleInfoEl = document.getElementById('cycle-info');
+    const progressEl = document.getElementById('progress');
+    const beep = document.getElementById('beep-sound');
+
+    function updateSettings() {
+        workDuration = parseInt(document.getElementById('work').value) || 25;
+        breakDuration = parseInt(document.getElementById('break').value) || 5;
+        totalCycles = parseInt(document.getElementById('cycles').value) || 4;
+    }
+
+    function formatTime(secs) {
+        let m = Math.floor(secs / 60);
+        let s = secs % 60;
+        return `${m}:${s.toString().padStart(2,'0')}`;
+    }
+
+    function updateUI() {
+        timerEl.textContent = formatTime(secondsLeft);
+        cycleInfoEl.innerHTML = `Ciclo <b>${currentCycle}</b> di <b>${totalCycles}</b> (${isWork ? 'Lavoro' : 'Pausa'})`;
+        // Calcolo avanzamento: 0-100% su tutti i cicli (lavoro+pausa)
+        let totalSteps = totalCycles * 2;
+        let currentStep = (currentCycle - 1) * 2 + (isWork ? 0 : 1);
+        let progressPercent = (currentStep + (isRunning ? (1 - secondsLeft / ((isWork ? workDuration : breakDuration) * 60)) : 0)) / totalSteps * 100;
+        progressEl.style.width = `${progressPercent}%`;
+    }
+
+    function nextStep() {
+        beep.currentTime = 0;
+        beep.loop = true;
+        beep.play();
+
+        if (isWork) {
+            timerEl.textContent = "Pausa a breve...";
+            isWork = false;
+            setTimeout(() => {
+                beep.pause();
+                beep.currentTime = 0;
+                secondsLeft = breakDuration * 60;
+                updateUI();
+                if (isRunning) timer = setTimeout(tick, 1000);
+            }, 5000);
+        } else {
+            timerEl.textContent = "Lavoro a breve...";
+            isWork = true;
+            setTimeout(() => {
+                beep.pause();
+                beep.currentTime = 0;
+                currentCycle++;
+                if (currentCycle > totalCycles) {
+                    stopPomodoro(true);
+                    return;
+                }
+                secondsLeft = workDuration * 60;
+                updateUI();
+                if (isRunning) timer = setTimeout(tick, 1000);
+            }, 5000);
+        }
+    }
+
+    function tick() {
+        if (!isRunning) return;
+        secondsLeft--;
+        updateUI();
+        if (secondsLeft <= 0) {
+            nextStep();
+        } else {
+            timer = setTimeout(tick, 1000);
+        }
+    }
+
+    function startPomodoro() {
+        if (isRunning) return;
+        updateSettings();
+        isRunning = true;
+        isWork = true;
+        currentCycle = 1;
+        secondsLeft = workDuration * 60;
+        updateUI();
+        tick();
+    }
+
+    function stopPomodoro(finished = false) {
+        isRunning = false;
+        clearTimeout(timer);
+        if (finished) {
+            timerEl.textContent = "Fatto!";
+            cycleInfoEl.textContent = `Hai completato ${totalCycles} cicli!`;
+            progressEl.style.width = "100%";
+        }
+    }
+
+    function resetPomodoro() {
+        isRunning = false;
+        clearTimeout(timer);
+        updateSettings();
+        currentCycle = 1;
+        isWork = true;
+        secondsLeft = workDuration * 60;
+        updateUI();
+    }
+    window.resetPomodoro = resetPomodoro;
+
+    // Eventi per immagini-bottone
+    document.getElementById('startPomodoroTimerBtn').onclick = startPomodoro;
+    document.getElementById('startPomodoroTimerBtn').onkeypress = function(e) { if(e.key==='Enter'||e.key===' ') startPomodoro(); };
+    document.getElementById('resetPomodoroBtn').onclick = resetPomodoro;
+    document.getElementById('resetPomodoroBtn').onkeypress = function(e) { if(e.key==='Enter'||e.key===' ') resetPomodoro(); };
+    // Init UI
+    resetPomodoro();
+    </script>
 </body>
 </html>
