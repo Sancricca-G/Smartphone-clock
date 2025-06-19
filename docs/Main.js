@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('timerDisplay'),
         () => {
             Utils.playAlarmSound();
-            Utils.showNotification('⏲️ Timer scaduto!', 5000);
+            Utils.showNotification('Timer scaduto!', 5000);
         }
     );
 
