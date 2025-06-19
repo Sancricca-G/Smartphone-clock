@@ -48,7 +48,7 @@ export class Stopwatch {
         return this.elapsedTime;
     }
 
-    // Funzione per controllare se è in esecuzione
+    // Funzione per controllare se  in esecuzione
     isRunning() {
         return this.running;
     }
