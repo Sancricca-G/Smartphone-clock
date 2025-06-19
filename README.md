@@ -21,6 +21,6 @@ Compatibile con tutti i principali browser
 🚀 Tecnologie utilizzate
 HTML5, CSS3
 
-JavaScript puro (vanilla JS) / oppure specifica framework se usato (es. React)
+JavaScript puro (vanilla JS)
 
 (Opzionale) LocalStorage per memorizzare sveglie/timer
