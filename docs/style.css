@@ -151,11 +151,17 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    margin: 8px 0;
+    padding: 18px 16px; /* aumentato il padding */
+    margin: 14px 0;    /* aumentato il margine verticale */
     background-color: rgba(185, 122, 87, 0.1);
     border-radius: 8px;
     border-left: 4px solid #B97A57;
+}
+
+.alarm-item > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
     .alarm-item button {
@@ -172,6 +178,11 @@ body {
         .alarm-item button:hover {
             background-color: #A86848;
         }
+
+    .alarm-item small {
+        display: block;
+        margin-bottom: 10px;
+    }
 
 .notification {
     position: fixed;
@@ -333,6 +344,14 @@ input[type="number"] {
     font-weight: 600;
     position: relative;
     top: 0;
+}
+
+/* --- Timer Buttons Centering --- */
+#timerButtons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 10px;
 }
 
 @media (max-width: 768px) {

@@ -33,8 +33,9 @@
             <div class="control-section">
                 <h3>Timer</h3>
                 <label for="timerMinutes">Minuti timer:</label>
-                <input type="number" id="timerMinutes" placeholder="Minuti" min="0" max="999">
-                <div>
+                <input type="number" id="timerMinutes" placeholder="Minuti" min="0" max="60">
+                <div id="timerError" style="color:#ff6b6b;min-height:18px;font-size:0.95em;"></div>
+                <div id="timerButtons">
                     <button id="startTimerBtn">Avvia</button>
                     <button id="pauseTimerBtn">Pausa</button>
                     <button id="resumeTimerBtn">Riprendi</button>

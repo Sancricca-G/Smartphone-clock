@@ -10,6 +10,11 @@ export class Timer {
 
     start(durationMs) {
         this.stop(); // Ferma qualsiasi timer esistente
+        // Limite massimo: 60 minuti
+        const maxMs = 60 * 60 * 1000;
+        if (durationMs > maxMs) {
+            durationMs = maxMs;
+        }
         this.remainingTime = durationMs;
         this.endTime = Date.now() + durationMs;
         this.running = true;

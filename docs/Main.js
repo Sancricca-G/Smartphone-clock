@@ -55,12 +55,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Timer controls
     document.getElementById('startTimerBtn').addEventListener('click', () => {
         const minutes = parseInt(document.getElementById('timerMinutes').value || '0', 10);
-        if (minutes > 0) {
-            timer.start(minutes * 60 * 1000);
-            document.getElementById('timerMinutes').value = '';
-        } else {
-            Utils.showNotification('Inserisci un numero di minuti valido!');
+        const timerError = document.getElementById('timerError');
+        if (isNaN(minutes) || minutes < 1) {
+            timerError.textContent = "Inserisci un valore tra 1 e 60 minuti.";
+            return;
         }
+        if (minutes > 60) {
+            timerError.textContent = 'Il timer può essere impostato al massimo per 60 minuti';
+            return;
+        }
+        timerError.textContent = '';
+        timer.start(minutes * 60 * 1000);
+        document.getElementById('timerMinutes').value = '';
     });
 
     document.getElementById('pauseTimerBtn').addEventListener('click', () => {
@@ -74,6 +80,17 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('resetTimerBtn').addEventListener('click', () => {
         timer.reset();
     });
+
+    // Cancella il messaggio di errore se l'utente modifica l'input
+    const timerMinutesInput = document.getElementById('timerMinutes');
+    const timerError = document.getElementById('timerError');
+    if (timerMinutesInput && timerError) {
+        timerMinutesInput.addEventListener('input', function () {
+            if (parseInt(timerMinutesInput.value, 10) <= 60) {
+                timerError.textContent = "";
+            }
+        });
+    }
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
