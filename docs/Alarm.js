@@ -3,12 +3,12 @@
 // Alarm Manager Module - Gestisce tutte le sveglie
 export class AlarmManager {
     constructor(listElement, statusElement) {
-        this.listElement = listElement;
-        this.statusElement = statusElement;
-        this.alarms = this.loadAlarms();
-        this.checkInterval = null;
-        this.render();
-        this.startChecking();
+        this.listElement = listElement;   // Elemento HTML per visualizzare la lista delle sveglie
+        this.statusElement = statusElement; // Elemento HTML per mostrare messaggi di stato
+        this.alarms = this.loadAlarms();  // Carica le sveglie salvate
+        this.checkInterval = null;        // Intervallo per il controllo delle sveglie
+        this.render();                    // Mostra le sveglie nella UI
+        this.startChecking();            // Avvia il controllo periodico delle sveglie
     }
 
     // Carica le sveglie dal localStorage
@@ -31,19 +31,21 @@ export class AlarmManager {
         }
     }
 
+    // Aggiunge una nuova sveglia
     add(time, repeat) {
         if (!Utils.validateTimeInput(time)) {
             this.showStatus('Inserisci un orario valido (HH:MM).', 'error');
             return false;
         }
 
+        // Evita duplicati
         if (this.alarms.some(a => a.time === time && a.repeat === repeat)) {
             this.showStatus('Sveglia già impostata per quell\'ora e per quel giorno.', 'error');
             return false;
         }
 
         const alarm = {
-            id: Date.now(),
+            id: Date.now(), // ID univoco
             time,
             repeat,
             active: true,
@@ -57,6 +59,7 @@ export class AlarmManager {
         return true;
     }
 
+    // Rimuove una sveglia tramite ID
     remove(id) {
         const initialLength = this.alarms.length;
         this.alarms = this.alarms.filter(alarm => alarm.id !== id);
@@ -68,6 +71,7 @@ export class AlarmManager {
         }
     }
 
+    // Attiva/disattiva una sveglia
     toggle(id) {
         const alarm = this.alarms.find(a => a.id === id);
         if (alarm) {
@@ -78,6 +82,7 @@ export class AlarmManager {
         }
     }
 
+    // Mostra tutte le sveglie nella UI
     render() {
         this.listElement.innerHTML = '';
 
@@ -112,14 +117,13 @@ export class AlarmManager {
         });
     }
 
+    // Avvia il controllo delle sveglie ogni 1.5 secondi
     startChecking() {
-        // Controlla le sveglie ogni 30 secondi per efficienza
         this.checkInterval = setInterval(() => this.checkAlarms(), 1500);
-
-        // Controllo immediato all'avvio
-        this.checkAlarms();
+        this.checkAlarms(); // Controllo immediato all'avvio
     }
 
+    // Controlla se una sveglia deve suonare
     checkAlarms() {
         const now = new Date();
         const currentTime = Utils.getCurrentTimeString();
@@ -131,55 +135,49 @@ export class AlarmManager {
 
                 if (shouldTrigger) {
                     this.triggerAlarm(alarm);
-
-                    // Rimuovi la sveglia dopo che è suonata (una sola volta anche se settimanale)
-                    setTimeout(() => this.remove(alarm.id), 1000);
+                    setTimeout(() => this.remove(alarm.id), 1000); // Rimuove dopo aver suonato
                 }
             }
         });
     }
 
-
+    // Verifica se la sveglia deve suonare in base al giorno
     shouldTriggerAlarm(alarm, currentDay) {
         return alarm.repeat === 'Una sola volta' || alarm.repeat === currentDay;
     }
 
+    // Esegue le azioni quando una sveglia suona
     triggerAlarm(alarm) {
-        // Riproduci suono
-        Utils.playAlarmSound();
+        Utils.playAlarmSound(); // Suono
+        Utils.showNotification(`⏰ Sveglia! ${alarm.time}`, 8000); // Notifica visiva
 
-        // Mostra notifica toast
-        Utils.showNotification(`⏰ Sveglia! ${alarm.time}`, 8000);
-
-        // Notifica browser se supportata e autorizzata
+        // Notifica browser
         if ('Notification' in window && Notification.permission === 'granted') {
             const notification = new Notification('Sveglia!', {
                 body: `È l'ora: ${alarm.time} (${alarm.repeat})`,
                 icon: '⏰',
                 requireInteraction: true
             });
-
-            // Chiudi la notifica dopo 10 secondi
             setTimeout(() => notification.close(), 10000);
         }
 
-        // Vibrazione su dispositivi supportati
+        // Vibrazione (se supportata)
         if ('vibrate' in navigator) {
             navigator.vibrate([200, 100, 200, 100, 200]);
         }
     }
 
+    // Mostra un messaggio di stato temporaneo
     showStatus(message, type) {
         this.statusElement.textContent = message;
         this.statusElement.style.color = type === 'error' ? '#FF0000' : '#F3E9DC';
 
-        // Pulisci il messaggio dopo 4 secondi
         setTimeout(() => {
             this.statusElement.textContent = '';
         }, 4000);
     }
 
-    // Pulizia risorse
+    // Ferma il controllo delle sveglie
     destroy() {
         if (this.checkInterval) {
             clearInterval(this.checkInterval);
@@ -187,15 +185,17 @@ export class AlarmManager {
         }
     }
 
-    // Funzioni di utilità
+    // Restituisce solo le sveglie attive
     getActiveAlarms() {
         return this.alarms.filter(alarm => alarm.active);
     }
 
+    // Restituisce il numero totale di sveglie
     getAlarmCount() {
         return this.alarms.length;
     }
 
+    // Rimuove tutte le sveglie
     clearAll() {
         this.alarms = [];
         this.saveAlarms();
