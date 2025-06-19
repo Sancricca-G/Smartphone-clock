@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Clock</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module" src="Main.js"></script>
 </head>
 <body>
-<div class="case">
+    <div class="case">
         <div class="title">The Web Clock</div>
         <div id="DigitalClock" class="clock"></div>
 
         <div class="controls-container">
             <div class="control-section">
                 <h3>Sveglia</h3>
+                <label for="alarmTime">Orario sveglia:</label>
                 <input type="time" id="alarmTime">
                 <select id="alarmRepeat">
                     <option value="Una sola volta">Una sola volta</option>
@@ -32,6 +32,7 @@
 
             <div class="control-section">
                 <h3>Timer</h3>
+                <label for="timerMinutes">Minuti timer:</label>
                 <input type="number" id="timerMinutes" placeholder="Minuti" min="0" max="999">
                 <div>
                     <button id="startTimerBtn">Avvia</button>
@@ -53,11 +54,55 @@
             </div>
         </div>
 
-        <div class="alarm-list">
-            <h3>Sveglie attive</h3>
-            <div id="alarmList"></div>
+        <div class="bottom-panels">
+            <div class="alarm-list">
+                <h3>Sveglie attive</h3>
+                <div id="alarmList"></div>
+            </div>
+            <div class="tomato-timer-section">
+                <h3>Timer Pomodoro</h3>
+                <div id="pomodoroTimerDisplay"></div>
+                <button id="startPomodoroBtn" class="pomodoro-btn">Avvia Pomodoro</button>
+            </div>
+            <div class="custom-panel">
+                <h3>Personalizzato</h3>
+                <div id="customPanelContent"></div>
+            </div>
         </div>
+
+        <!-- Overlay Pomodoro nascosto -->
+        <div id="pomodoroOverlay" class="pomodoro-overlay" style="display:none;">
+            <div class="container pomodoro-modal">
+                <button id="closePomodoroOverlay" class="close-pomodoro">&times;</button>
+                <h1>Modalità Pomodoro</h1>
+                <div>
+                    <label for="work">Durata lavoro (min):</label>
+                    <input id="work" type="number" min="1" value="25">
+                    <label for="break">Durata pausa (min):</label>
+                    <input id="break" type="number" min="1" value="5">
+                    <label for="cycles">Numero di cicli:</label>
+                    <input id="cycles" type="number" min="1" value="4">
+                </div>
+                <div id="cycle-info"></div>
+                <div id="timer">25:00</div>
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="pomodoro-btns">
+                    <div class="btn-group">
+                        <button id="startPomodoroTimerBtn" class="pomodoro-btn">AVVIA</button>
+                    </div>
+                    <div class="btn-group">
+                        <button id="resetPomodoroBtn" class="pomodoro-btn">RESET</button>
+                    </div>
+                </div>
+                <audio id="beep-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+            </div>
+        </div>
+
     </div>
 
+    <script type="module" src="Main.js"></script>
+    <script type="module" src="Pomodoro.js"></script>
 </body>
 </html>
