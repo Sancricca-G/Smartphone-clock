@@ -31,7 +31,7 @@ export class AlarmManager {
         }
     }
 
-    add(time, repeat) {
+    add(time, repeat, label = '') {
         // Validazione input
         if (!Utils.validateTimeInput(time)) {
             this.showStatus('Inserisci un orario valido (HH:MM).', 'error');
@@ -55,6 +55,7 @@ export class AlarmManager {
             id: Date.now(),
             time,
             repeat,
+            label: label || '', // salva l'etichetta
             active: true,
             created: new Date().toISOString()
         };
@@ -106,6 +107,7 @@ export class AlarmManager {
             div.innerHTML = `
                 <div>
                     <strong>${alarm.time}</strong><br>
+                    ${alarm.label ? `<span style="font-size:0.98em;color:#B97A57;font-weight:500;">${alarm.label}</span><br>` : ''}
                     <small>${alarm.repeat}</small>
                 </div>
                 <div>

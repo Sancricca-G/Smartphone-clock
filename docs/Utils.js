@@ -1,4 +1,4 @@
-// Utils Module - Funzioni di utilit� condivise
+// Utils Module - Funzioni di utilità condivise
 export class Utils {
     static formatTimeUnit(unit) {
         return unit.toString().padStart(2, '0');

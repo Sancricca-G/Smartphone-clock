@@ -10,11 +10,8 @@ export class Timer {
 
     start(durationMs) {
         this.stop(); // Ferma qualsiasi timer esistente
-        // Limite massimo: 60 minuti
-        const maxMs = 60 * 60 * 1000;
-        if (durationMs > maxMs) {
-            durationMs = maxMs;
-        }
+
+        // Rimuoviamo il limite di 60 minuti per supportare ore e secondi
         this.remainingTime = durationMs;
         this.endTime = Date.now() + durationMs;
         this.running = true;
@@ -31,14 +28,12 @@ export class Timer {
             clearInterval(this.interval);
             this.interval = null;
         }
-        // Calcola il tempo rimanente al momento della pausa
         this.remainingTime = Math.max(0, this.endTime - Date.now());
     }
 
     resume() {
         if (!this.paused || this.remainingTime <= 0) return;
 
-        // Riavvia il timer con il tempo rimanente
         this.endTime = Date.now() + this.remainingTime;
         this.running = true;
         this.paused = false;
@@ -57,7 +52,7 @@ export class Timer {
     reset() {
         this.stop();
         this.remainingTime = 0;
-        this.displayElement.textContent = '00:00';
+        this.displayElement.textContent = '00:00:00';
     }
 
     update() {
@@ -70,9 +65,10 @@ export class Timer {
             }
         } else {
             const totalSeconds = Math.ceil(msLeft / 1000);
-            const minutes = Utils.formatTimeUnit(Math.floor(totalSeconds / 60));
-            const seconds = Utils.formatTimeUnit(totalSeconds % 60);
-            this.displayElement.textContent = `${minutes}:${seconds}`;
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            this.displayElement.textContent = `${Utils.formatTimeUnit(hours)}:${Utils.formatTimeUnit(minutes)}:${Utils.formatTimeUnit(seconds)}`;
         }
     }
 
