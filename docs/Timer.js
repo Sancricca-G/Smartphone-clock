@@ -1,87 +1,120 @@
-import { Utils } from './utils.js';
-
-// Timer Module - Gestisce il timer con conto alla rovescia
+// Timer.js - Gestione dei timer multipli come classe modulare
 export class Timer {
-    constructor(displayElement, onEnd) {
-        this.displayElement = displayElement;
-        this.onEnd = onEnd;
-        this.reset();
+    constructor(onTimerEnd, onTimersUpdate) {
+        this.timers = this.loadTimers();
+        this.intervals = {};
+        this.onTimerEnd = onTimerEnd;
+        this.onTimersUpdate = onTimersUpdate;
     }
 
-    start(durationMs) {
-        this.stop(); // Ferma qualsiasi timer esistente
-
-        // Rimuoviamo il limite di 60 minuti per supportare ore e secondi
-        this.remainingTime = durationMs;
-        this.endTime = Date.now() + durationMs;
-        this.running = true;
-        this.paused = false;
-        this.interval = setInterval(() => this.update(), 100);
+    saveTimers() {
+        localStorage.setItem('timers', JSON.stringify(this.timers));
     }
-
-    pause() {
-        if (!this.running || this.paused) return;
-
-        this.running = false;
-        this.paused = true;
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-        this.remainingTime = Math.max(0, this.endTime - Date.now());
-    }
-
-    resume() {
-        if (!this.paused || this.remainingTime <= 0) return;
-
-        this.endTime = Date.now() + this.remainingTime;
-        this.running = true;
-        this.paused = false;
-        this.interval = setInterval(() => this.update(), 100);
-    }
-
-    stop() {
-        this.running = false;
-        this.paused = false;
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
+    loadTimers() {
+        try {
+            const stored = localStorage.getItem('timers');
+            return stored ? JSON.parse(stored) : [];
+        } catch {
+            return [];
         }
     }
 
-    reset() {
-        this.stop();
-        this.remainingTime = 0;
-        this.displayElement.textContent = '00:00:00';
+    addTimer({minutes, seconds, label}) {
+        const durationMs = (minutes * 60 + seconds) * 1000;
+        const timer = {
+            id: Date.now().toString(),
+            minutes,
+            seconds,
+            duration: minutes * 60 + seconds,
+            label,
+            active: false,
+            paused: false,
+            remainingMs: durationMs,
+            created: new Date().toISOString()
+        };
+        this.timers.push(timer);
+        this.saveTimers();
+        this.onTimersUpdate && this.onTimersUpdate();
     }
 
-    update() {
-        const msLeft = this.endTime - Date.now();
+    removeTimer(id) {
+        clearInterval(this.intervals[id]);
+        delete this.intervals[id];
+        this.timers = this.timers.filter(t => t.id !== id);
+        this.saveTimers();
+        this.onTimersUpdate && this.onTimersUpdate();
+    }
 
-        if (msLeft <= 0) {
-            this.reset();
-            if (this.onEnd) {
-                this.onEnd();
+    activateTimer(id) {
+        const t = this.timers.find(x => x.id === id);
+        if (!t.active) {
+            t.active = true;
+            t.paused = false;
+            t.remainingMs = (t.minutes * 60 + t.seconds) * 1000;
+            t.startTimestamp = Date.now();
+            this.saveTimers();
+            this.onTimersUpdate && this.onTimersUpdate();
+            this.startAlarmTimerDisplay(id);
+        }
+    }
+
+    pauseTimer(id) {
+        const t = this.timers.find(x => x.id === id);
+        if (t && t.active && !t.paused) {
+            clearInterval(this.intervals[id]);
+            const elapsed = Date.now() - t.startTimestamp;
+            t.remainingMs = Math.max(0, t.remainingMs - elapsed);
+            t.paused = true;
+            this.saveTimers();
+            this.onTimersUpdate && this.onTimersUpdate();
+        }
+    }
+
+    resumeTimer(id) {
+        const t = this.timers.find(x => x.id === id);
+        if (t && t.active && t.paused && t.remainingMs > 0) {
+            t.paused = false;
+            t.startTimestamp = Date.now();
+            this.saveTimers();
+            this.onTimersUpdate && this.onTimersUpdate();
+        }
+    }
+
+    resetTimer(id) {
+        const t = this.timers.find(x => x.id === id);
+        clearInterval(this.intervals[id]);
+        t.active = false;
+        t.paused = false;
+        t.remainingMs = (t.minutes * 60 + t.seconds) * 1000;
+        this.saveTimers();
+        this.onTimersUpdate && this.onTimersUpdate();
+    }
+
+    startAlarmTimerDisplay(id) {
+        const t = this.timers.find(x => x.id === id);
+        if (!t || t.paused) return;
+        clearInterval(this.intervals[id]);
+        const update = () => {
+            const msLeft = t.remainingMs - (Date.now() - t.startTimestamp);
+            if (msLeft <= 0) {
+                clearInterval(this.intervals[id]);
+                t.active = false;
+                t.paused = false;
+                t.remainingMs = 0;
+                this.saveTimers();
+                this.onTimersUpdate && this.onTimersUpdate();
+                this.onTimerEnd && this.onTimerEnd(t);
             }
-        } else {
-            const totalSeconds = Math.ceil(msLeft / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            this.displayElement.textContent = `${Utils.formatTimeUnit(hours)}:${Utils.formatTimeUnit(minutes)}:${Utils.formatTimeUnit(seconds)}`;
-        }
+        };
+        update();
+        this.intervals[id] = setInterval(update, 500);
     }
 
-    // Funzioni di utilità per controllare lo stato
-    isRunning() {
-        return this.running;
+    getTimers() {
+        return this.timers;
     }
 
-    isPaused() {
-        return this.paused;
-    }
-
-    getRemainingTime() {
-        return this.remainingTime;
+    clearAllIntervals() {
+        Object.values(this.intervals).forEach(i => i && clearInterval(i));
     }
 }

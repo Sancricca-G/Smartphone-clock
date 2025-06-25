@@ -8,7 +8,16 @@
 </head>
 <body>
 <div class="case">
-    <div class="title">The Web Clock</div>
+    <div style="position: relative; margin-bottom: 10px;">
+        <div class="theme-switch-wrapper" style="position:absolute;top:0;left:0;margin-right:18px;">
+            <label class="theme-switch" for="theme-toggle">
+                <input type="checkbox" id="theme-toggle" />
+                <span class="slider"></span>
+            </label>
+            <span class="theme-label" id="theme-label">Tema scuro</span>
+        </div>
+        <div class="title" style="margin-bottom:0; text-align:center;">The Web Clock</div>
+    </div>
     <div id="DigitalClock" class="clock"></div>
     <div id="AnalogClockContainer" class="analog-clock-container" style="display:none;">
         <div class="analog-clock">
@@ -132,5 +141,24 @@
 <script type="module" src="Main.js"></script>
 <script type="module" src="Pomodoro.js"></script>
 <script type="module" src="AnalogClock.js"></script>
+<script>
+    // Gestione cambio tema
+    const themeToggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+    const themeLabel = document.getElementById('theme-label');
+    function updateThemeLabel() {
+        themeLabel.textContent = themeToggle.checked ? 'Tema chiaro' : 'Tema scuro';
+    }
+    themeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            root.classList.add('dark-theme');
+        } else {
+            root.classList.remove('dark-theme');
+        }
+        updateThemeLabel();
+    });
+    // Imposta la label corretta all'avvio
+    updateThemeLabel();
+</script>
 </body>
 </html>

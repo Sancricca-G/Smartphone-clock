@@ -1,8 +1,8 @@
 ﻿import { Clock } from './clock.js';
 import { Stopwatch } from './stopwatch.js';
-import { Timer } from './timer.js';
 import { AlarmManager } from './alarm.js';
 import { Utils } from './utils.js';
+import { Timer } from './Timer.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const clock = new Clock(document.getElementById('DigitalClock'));
@@ -52,14 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
         lapBtn.disabled = true;
     });
 
-    const timer = new Timer(
-        document.getElementById('timerDisplay'),
-        () => {
-            Utils.playAlarmSound();
-            Utils.showNotification('⏲️ Timer scaduto!', 5000);
-        }
-    );
-
     if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
     }
@@ -76,22 +68,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const customPanel = document.getElementById('customPanelContent');
-    let timers = loadTimers();
-    let alarmTimerIntervals = {};
 
-    function saveTimers() {
-        localStorage.setItem('timers', JSON.stringify(timers));
-    }
-    function loadTimers() {
-        try {
-            const stored = localStorage.getItem('timers');
-            return stored ? JSON.parse(stored) : [];
-        } catch {
-            return [];
-        }
-    }
+    // Inizializza Timer come istanza
+    const timerManager = new Timer(
+        (timer) => {
+            Utils.playAlarmSound();
+            Utils.showNotification('⏲️ Timer scaduto!', 5000);
+        },
+        renderTimers
+    );
 
     function renderTimers() {
+        const timers = timerManager.getTimers();
         customPanel.innerHTML = '';
         if (!timers.length) {
             customPanel.innerHTML = '<p style="color:#999;font-style:italic;text-align:center;">Nessun timer attivo</p>';
@@ -102,8 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
             div.className = 'alarm-item';
             div.style.opacity = t.active ? '1' : '0.6';
             let displayTime = "00:00";
+            // Calcolo corretto del tempo rimanente
             if (t.active && !t.paused) {
-                const msLeft = t.remainingMs - (Date.now() - t.startTimestamp);
+                const msLeft = Math.max(0, t.remainingMs - (Date.now() - t.startTimestamp));
                 const total = Math.ceil(msLeft / 1000);
                 const mm = String(Math.floor(total / 60)).padStart(2, '0');
                 const ss = String(total % 60).padStart(2, '0');
@@ -135,97 +124,30 @@ document.addEventListener('DOMContentLoaded', () => {
             customPanel.appendChild(div);
             setUpTimerButtons(t.id);
         });
-        timers.filter(t => t.active && !t.paused).forEach(t => startAlarmTimerDisplay(t.id));
+
+        // Aggiorna la visualizzazione dei timer attivi ogni secondo
+        if (window._timerListInterval) clearInterval(window._timerListInterval);
+        const updateAllTimers = () => {
+            timerManager.getTimers().forEach(t => {
+                if (t.active && !t.paused) {
+                    const msLeft = Math.max(0, t.remainingMs - (Date.now() - t.startTimestamp));
+                    const total = Math.ceil(msLeft / 1000);
+                    const mm = String(Math.floor(total / 60)).padStart(2, '0');
+                    const ss = String(total % 60).padStart(2, '0');
+                    const el = document.getElementById(`alarm-timer-${t.id}`);
+                    if (el) el.textContent = msLeft > 0 ? `${mm}:${ss}` : '00:00';
+                }
+            });
+        };
+        window._timerListInterval = setInterval(updateAllTimers, 500);
     }
 
     function setUpTimerButtons(id) {
-        const t = timers.find(x => x.id === id);
-        document.getElementById(`start-${id}`).onclick = () => activateTimer(id);
-        document.getElementById(`pause-${id}`).onclick = () => pauseTimer(id);
-        document.getElementById(`resume-${id}`).onclick = () => resumeTimer(id);
-        document.getElementById(`reset-${id}`).onclick = () => resetTimer(id);
-        document.getElementById(`remove-${id}`).onclick = () => removeTimer(id);
-    }
-
-    window.removeTimer = function(id) {
-        clearInterval(alarmTimerIntervals[id]);
-        delete alarmTimerIntervals[id];
-        timers = timers.filter(t => t.id !== id);
-        saveTimers();
-        renderTimers();
-    };
-
-    window.activateTimer = function(id) {
-        const t = timers.find(x => x.id === id);
-        if (!t.active) {
-            t.active = true;
-            t.paused = false;
-            // CORREZIONE: calcola la durata in millisecondi corretta usando minuti e secondi
-            t.remainingMs = (t.minutes * 60 + t.seconds) * 1000;
-            t.startTimestamp = Date.now();
-            saveTimers();
-            renderTimers();
-        }
-    };
-
-    window.pauseTimer = function(id) {
-        const t = timers.find(x => x.id === id);
-        if (t && t.active && !t.paused) {
-            clearInterval(alarmTimerIntervals[id]);
-            const elapsed = Date.now() - t.startTimestamp;
-            t.remainingMs = Math.max(0, t.remainingMs - elapsed);
-            t.paused = true;
-            saveTimers();
-            renderTimers();
-        }
-    };
-
-    window.resumeTimer = function(id) {
-        const t = timers.find(x => x.id === id);
-        if (t && t.active && t.paused && t.remainingMs > 0) {
-            t.paused = false;
-            t.startTimestamp = Date.now();
-            saveTimers();
-            renderTimers();
-        }
-    };
-
-    window.resetTimer = function(id) {
-        const t = timers.find(x => x.id === id);
-        clearInterval(alarmTimerIntervals[id]);
-        t.active = false;
-        t.paused = false;
-        // CORREZIONE: resetta la durata in ms usando minuti e secondi
-        t.remainingMs = (t.minutes * 60 + t.seconds) * 1000;
-        saveTimers();
-        renderTimers();
-    };
-
-    function startAlarmTimerDisplay(id) {
-        const t = timers.find(x => x.id === id);
-        if (!t || t.paused) return;
-        clearInterval(alarmTimerIntervals[id]);
-        function update() {
-            const msLeft = t.remainingMs - (Date.now() - t.startTimestamp);
-            if (msLeft <= 0) {
-                document.getElementById(`alarm-timer-${id}`).textContent = '00:00';
-                clearInterval(alarmTimerIntervals[id]);
-                t.active = false;
-                t.paused = false;
-                t.remainingMs = 0;
-                saveTimers();
-                renderTimers();
-                Utils.playAlarmSound();
-                Utils.showNotification('⏲️ Timer scaduto!', 5000);
-            } else {
-                const total = Math.ceil(msLeft / 1000);
-                const mm = String(Math.floor(total / 60)).padStart(2, '0');
-                const ss = String(total % 60).padStart(2, '0');
-                document.getElementById(`alarm-timer-${id}`).textContent = `${mm}:${ss}`;
-            }
-        }
-        update();
-        alarmTimerIntervals[id] = setInterval(update, 500);
+        document.getElementById(`start-${id}`).onclick = () => timerManager.activateTimer(id);
+        document.getElementById(`pause-${id}`).onclick = () => timerManager.pauseTimer(id);
+        document.getElementById(`resume-${id}`).onclick = () => timerManager.resumeTimer(id);
+        document.getElementById(`reset-${id}`).onclick = () => timerManager.resetTimer(id);
+        document.getElementById(`remove-${id}`).onclick = () => timerManager.removeTimer(id);
     }
 
     document.getElementById('addTimerBtn').addEventListener('click', () => {
@@ -243,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timerError.textContent = "Imposta un timer tra 1 secondo e 120 minuti (max 2 ore).";
             return;
         }
-        const duplicate = timers.some(
+        const duplicate = timerManager.getTimers().some(
             t => t.minutes === minutes && t.seconds === seconds && t.label === label
         );
         if (duplicate) {
@@ -254,21 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('timerMinutes').value = '';
         document.getElementById('timerSeconds').value = '';
         document.getElementById('timerLabel').value = '';
-        // CORREZIONE: salva la durata in ms usando minuti e secondi
-        const durationMs = (minutes * 60 + seconds) * 1000;
-        timers.push({
-            id: Date.now().toString(),
-            minutes,
-            seconds,
-            duration: minutes * 60 + seconds,
-            label,
-            active: false,
-            paused: false,
-            remainingMs: durationMs,
-            created: new Date().toISOString()
-        });
-        saveTimers();
-        renderTimers();
+        timerManager.addTimer({ minutes, seconds, label });
     });
 
     renderTimers();
@@ -276,10 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('beforeunload', () => {
         clock.stop();
         stopwatch.stop();
-        timer.stop();
         alarmManager.destroy();
-        Object.values(alarmTimerIntervals).forEach(i => i && clearInterval(i));
+        timerManager.clearAllIntervals();
     });
 
     window.alarmManager = alarmManager;
+    window.timerManager = timerManager;
 });
