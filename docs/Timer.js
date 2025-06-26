@@ -1,103 +1,120 @@
-import { Utils } from './Utils.js';
-
-// Timer Module - Gestisce il timer con conto alla rovescia
+// Timer.js - Gestione dei timer multipli come classe modulare
 export class Timer {
-    constructor(displayElement, onEnd) {
-        // Elemento HTML dove verrà mostrato il tempo rimanente
-        this.displayElement = displayElement;
-        // Callback da eseguire quando il timer termina
-        this.onEnd = onEnd;
-        this.reset(); // Inizializza lo stato del timer
+    constructor(onTimerEnd, onTimersUpdate) {
+        this.timers = this.loadTimers();
+        this.intervals = {};
+        this.onTimerEnd = onTimerEnd;
+        this.onTimersUpdate = onTimersUpdate;
     }
 
-    start(durationMs) {
-        // Ferma eventuali timer già in esecuzione
-        this.stop();
-        // Imposta il tempo rimanente e il tempo di fine
-        this.remainingTime = durationMs;
-        this.endTime = Date.now() + durationMs;
-        this.running = true;
-        this.paused = false;
-        // Avvia l'intervallo di aggiornamento ogni 100ms
-        this.interval = setInterval(() => this.update(), 100);
+    saveTimers() {
+        localStorage.setItem('timers', JSON.stringify(this.timers));
     }
-
-    pause() {
-        // Se il timer non è in esecuzione o è già in pausa, esce
-        if (!this.running || this.paused) return;
-
-        this.running = false;
-        this.paused = true;
-        // Ferma l'intervallo di aggiornamento
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
-        // Calcola il tempo rimanente al momento della pausa
-        this.remainingTime = Math.max(0, this.endTime - Date.now());
-    }
-
-    resume() {
-        // Se non è in pausa o non c'è tempo rimanente, esce
-        if (!this.paused || this.remainingTime <= 0) return;
-
-        // Calcola il nuovo tempo di fine e riavvia l'intervallo
-        this.endTime = Date.now() + this.remainingTime;
-        this.running = true;
-        this.paused = false;
-        this.interval = setInterval(() => this.update(), 100);
-    }
-
-    stop() {
-        // Ferma il timer e cancella l'intervallo
-        this.running = false;
-        this.paused = false;
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
+    loadTimers() {
+        try {
+            const stored = localStorage.getItem('timers');
+            return stored ? JSON.parse(stored) : [];
+        } catch {
+            return [];
         }
     }
 
-    reset() {
-        // Ferma il timer e azzera il tempo rimanente
-        this.stop();
-        this.remainingTime = 0;
-        // Mostra 00:00 nell'elemento HTML
-        this.displayElement.textContent = '00:00';
+    addTimer({minutes, seconds, label}) {
+        const durationMs = (minutes * 60 + seconds) * 1000;
+        const timer = {
+            id: Date.now().toString(),
+            minutes,
+            seconds,
+            duration: minutes * 60 + seconds,
+            label,
+            active: false,
+            paused: false,
+            remainingMs: durationMs,
+            created: new Date().toISOString()
+        };
+        this.timers.push(timer);
+        this.saveTimers();
+        this.onTimersUpdate && this.onTimersUpdate();
     }
 
-    update() {
-        // Calcola i millisecondi rimanenti
-        const msLeft = this.endTime - Date.now();
+    removeTimer(id) {
+        clearInterval(this.intervals[id]);
+        delete this.intervals[id];
+        this.timers = this.timers.filter(t => t.id !== id);
+        this.saveTimers();
+        this.onTimersUpdate && this.onTimersUpdate();
+    }
 
-        if (msLeft <= 0) {
-            // Se il tempo è scaduto, resetta e chiama la callback
-            this.reset();
-            if (this.onEnd) {
-                this.onEnd();
+    activateTimer(id) {
+        const t = this.timers.find(x => x.id === id);
+        if (!t.active) {
+            t.active = true;
+            t.paused = false;
+            t.remainingMs = (t.minutes * 60 + t.seconds) * 1000;
+            t.startTimestamp = Date.now();
+            this.saveTimers();
+            this.onTimersUpdate && this.onTimersUpdate();
+            this.startAlarmTimerDisplay(id);
+        }
+    }
+
+    pauseTimer(id) {
+        const t = this.timers.find(x => x.id === id);
+        if (t && t.active && !t.paused) {
+            clearInterval(this.intervals[id]);
+            const elapsed = Date.now() - t.startTimestamp;
+            t.remainingMs = Math.max(0, t.remainingMs - elapsed);
+            t.paused = true;
+            this.saveTimers();
+            this.onTimersUpdate && this.onTimersUpdate();
+        }
+    }
+
+    resumeTimer(id) {
+        const t = this.timers.find(x => x.id === id);
+        if (t && t.active && t.paused && t.remainingMs > 0) {
+            t.paused = false;
+            t.startTimestamp = Date.now();
+            this.saveTimers();
+            this.onTimersUpdate && this.onTimersUpdate();
+        }
+    }
+
+    resetTimer(id) {
+        const t = this.timers.find(x => x.id === id);
+        clearInterval(this.intervals[id]);
+        t.active = false;
+        t.paused = false;
+        t.remainingMs = (t.minutes * 60 + t.seconds) * 1000;
+        this.saveTimers();
+        this.onTimersUpdate && this.onTimersUpdate();
+    }
+
+    startAlarmTimerDisplay(id) {
+        const t = this.timers.find(x => x.id === id);
+        if (!t || t.paused) return;
+        clearInterval(this.intervals[id]);
+        const update = () => {
+            const msLeft = t.remainingMs - (Date.now() - t.startTimestamp);
+            if (msLeft <= 0) {
+                clearInterval(this.intervals[id]);
+                t.active = false;
+                t.paused = false;
+                t.remainingMs = 0;
+                this.saveTimers();
+                this.onTimersUpdate && this.onTimersUpdate();
+                this.onTimerEnd && this.onTimerEnd(t);
             }
-        } else {
-            // Calcola minuti e secondi rimanenti
-            const totalSeconds = Math.ceil(msLeft / 1000);
-            const minutes = Utils.formatTimeUnit(Math.floor(totalSeconds / 60));
-            const seconds = Utils.formatTimeUnit(totalSeconds % 60);
-            // Aggiorna il contenuto dell'elemento HTML
-            this.displayElement.textContent = `${minutes}:${seconds}`;
-        }
+        };
+        update();
+        this.intervals[id] = setInterval(update, 500);
     }
 
-    // Funzione di utilità: restituisce true se il timer è in esecuzione
-    isRunning() {
-        return this.running;
+    getTimers() {
+        return this.timers;
     }
 
-    // Funzione di utilità: restituisce true se il timer è in pausa
-    isPaused() {
-        return this.paused;
-    }
-
-    // Funzione di utilità: restituisce il tempo rimanente in millisecondi
-    getRemainingTime() {
-        return this.remainingTime;
+    clearAllIntervals() {
+        Object.values(this.intervals).forEach(i => i && clearInterval(i));
     }
 }

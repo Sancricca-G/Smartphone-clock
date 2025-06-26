@@ -49,9 +49,10 @@ function updateSettings(els) {
 function updateUI(els) {
     els.timerEl.textContent = formatTime(secondsLeft);
     els.cycleInfoEl.innerHTML = `Ciclo <b>${currentCycle}</b> di <b>${totalCycles}</b> (${isWork ? 'Lavoro' : 'Pausa'})`;
-    let totalSteps = totalCycles * 2;
-    let currentStep = (currentCycle - 1) * 2 + (isWork ? 0 : 1);
-    let progressPercent = (currentStep + (isRunning ? (1 - secondsLeft / ((isWork ? workDuration : breakDuration) * 60)) : 0)) / totalSteps * 100;
+    // Barra di avanzamento relativa SOLO alla fase corrente (lavoro o pausa)
+    const phaseTotal = (isWork ? workDuration : breakDuration) * 60;
+    const phaseElapsed = phaseTotal - secondsLeft;
+    let progressPercent = (phaseElapsed / phaseTotal) * 100;
     els.progressEl.style.width = `${progressPercent}%`;
 }
 

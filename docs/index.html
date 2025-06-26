@@ -1,108 +1,164 @@
 ﻿<!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Web Clock</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="case">
-        <div class="title">The Web Clock</div>
-        <div id="DigitalClock" class="clock"></div>
+<div class="case">
+    <div style="position: relative; margin-bottom: 10px;">
+        <div class="theme-switch-wrapper" style="position:absolute;top:0;left:0;margin-right:18px;">
+            <label class="theme-switch" for="theme-toggle">
+                <input type="checkbox" id="theme-toggle" />
+                <span class="slider"></span>
+            </label>
+            <span class="theme-label" id="theme-label">Tema scuro</span>
+        </div>
+        <div class="title" style="margin-bottom:0; text-align:center;">The Web Clock</div>
+    </div>
+    <div id="DigitalClock" class="clock"></div>
+    <div id="AnalogClockContainer" class="analog-clock-container" style="display:none;">
+        <div class="analog-clock">
+            <div style="--clr: #ff3d58; --h: 74px" id="hour" class="hand"><i></i></div>
+            <div style="--clr: #00a6ff; --h: 84px" id="min" class="hand"><i></i></div>
+            <div style="--clr: #ffffff; --h: 94px" id="sec" class="hand"><i></i></div>
+            <span style="--i: 1"><b>1</b></span>
+            <span style="--i: 2"><b>2</b></span>
+            <span style="--i: 3"><b>3</b></span>
+            <span style="--i: 4"><b>4</b></span>
+            <span style="--i: 5"><b>5</b></span>
+            <span style="--i: 6"><b>6</b></span>
+            <span style="--i: 7"><b>7</b></span>
+            <span style="--i: 8"><b>8</b></span>
+            <span style="--i: 9"><b>9</b></span>
+            <span style="--i: 10"><b>10</b></span>
+            <span style="--i: 11"><b>11</b></span>
+            <span style="--i: 12"><b>12</b></span>
+        </div>
+    </div>
+    <button id="toggleClockBtn" class="toggle-clock-btn" style="position:static;display:block;margin:0 auto 20px auto;">ANALOGICO</button>
 
-        <div class="controls-container">
-            <div class="control-section">
-                <h3>Sveglia</h3>
-                <label for="alarmTime">Orario sveglia:</label>
-                <input type="time" id="alarmTime">
-                <select id="alarmRepeat">
-                    <option value="Una sola volta">Una sola volta</option>
-                    <option value="Lunedi">Lunedì</option>
-                    <option value="Martedi">Martedì</option>
-                    <option value="Mercoledi">Mercoledì</option>
-                    <option value="Giovedi">Giovedì</option>
-                    <option value="Venerdi">Venerdì</option>
-                    <option value="Sabato">Sabato</option>
-                    <option value="Domenica">Domenica</option>
-                </select>
-                <button id="setAlarmBtn">Imposta Sveglia</button>
-                <div id="alarmStatus" class="status"></div>
+    <div class="controls-container">
+        <div class="control-section">
+            <h3>Sveglia</h3>
+            <label for="alarmTime">Orario sveglia:</label>
+            <input type="time" id="alarmTime" style="margin-bottom:4px;" />
+            <label for="alarmLabel" style="margin-top:0;">Etichetta:</label>
+            <input type="text" id="alarmLabel" maxlength="30" placeholder="Es: Sveglia lavoro" />
+            <select id="alarmRepeat">
+                <option value="Una sola volta">Una sola volta</option>
+                <option value="Lunedi">Lunedì</option>
+                <option value="Martedi">Martedì</option>
+                <option value="Mercoledi">Mercoledì</option>
+                <option value="Giovedi">Giovedì</option>
+                <option value="Venerdi">Venerdì</option>
+                <option value="Sabato">Sabato</option>
+                <option value="Domenica">Domenica</option>
+            </select>
+            <button id="setAlarmBtn">Imposta Sveglia</button>
+            <div id="alarmStatus" class="status"></div>
+        </div>
+        <div class="control-section">
+            <h3>Timer</h3>
+            <label for="timerMinutes">Minuti timer:</label>
+            <div style="display:flex;gap:8px;justify-content:center;">
+                <input type="number" id="timerMinutes" placeholder="Minuti" min="0" max="120" style="width:90px;" />
+                <input type="number" id="timerSeconds" placeholder="Secondi" min="0" max="59" style="width:90px;" />
             </div>
-
-            <div class="control-section">
-                <h3>Timer</h3>
-                <label for="timerMinutes">Minuti timer:</label>
-                <input type="number" id="timerMinutes" placeholder="Minuti" min="0" max="999">
-                <div>
-                    <button id="startTimerBtn">Avvia</button>
-                    <button id="pauseTimerBtn">Pausa</button>
-                    <button id="resumeTimerBtn">Riprendi</button>
-                    <button id="resetTimerBtn">Reset</button>
-                </div>
-                <div id="timerDisplay" class="display">00:00</div>
+            <label for="timerLabel" style="margin-top:0;">Etichetta:</label>
+            <input type="text" id="timerLabel" maxlength="30" placeholder="Es: Timer pasta" />
+            <div id="timerError" style="color:#ff6b6b;min-height:18px;font-size:0.95em;"></div>
+            <div id="timerButtons">
+                <button id="addTimerBtn">Aggiungi</button>
             </div>
-
-            <div class="control-section">
-                <h3>Cronometro</h3>
-                <div>
-                    <button id="startStopwatchBtn">Avvia</button>
-                    <button id="stopStopwatchBtn">Stop</button>
-                    <button id="resetStopwatchBtn">Reset</button>
-                </div>
-                <div id="stopwatchDisplay" class="display">00:00.0</div>
+            <div id="timerDisplay" class="timer-display">00:00</div>
+        </div>
+        <div class="control-section">
+            <h3>Cronometro</h3>
+            <div>
+                <button id="startStopwatchBtn">Avvia</button>
+                <button id="stopStopwatchBtn">Stop</button>
+                <button id="resetStopwatchBtn">Reset</button>
+                <button id="lapStopwatchBtn">Giro</button>
+            </div>
+            <div id="stopwatchDisplay" class="display">00:00.0</div>
+            <div id="lapsSection">
+                <h4 style="margin-bottom: 8px;">Giri:</h4>
+                <ul id="lapsList" class="laps-list"></ul>
             </div>
         </div>
-
-        <div class="bottom-panels">
-            <div class="alarm-list">
-                <h3>Sveglie attive</h3>
-                <div id="alarmList"></div>
-            </div>
-            <div class="tomato-timer-section">
-                <h3>Timer Pomodoro</h3>
-                <div id="pomodoroTimerDisplay"></div>
-                <button id="startPomodoroBtn" class="pomodoro-btn">Avvia Pomodoro</button>
-            </div>
-            <div class="custom-panel">
-                <h3>Personalizzato</h3>
-                <div id="customPanelContent"></div>
-            </div>
-        </div>
-
-        <!-- Overlay Pomodoro nascosto -->
-        <div id="pomodoroOverlay" class="pomodoro-overlay" style="display:none;">
-            <div class="container pomodoro-modal">
-                <button id="closePomodoroOverlay" class="close-pomodoro">&times;</button>
-                <h1>Modalità Pomodoro</h1>
-                <div>
-                    <label for="work">Durata lavoro (min):</label>
-                    <input id="work" type="number" min="1" value="25">
-                    <label for="break">Durata pausa (min):</label>
-                    <input id="break" type="number" min="1" value="5">
-                    <label for="cycles">Numero di cicli:</label>
-                    <input id="cycles" type="number" min="1" value="4">
-                </div>
-                <div id="cycle-info"></div>
-                <div id="timer">25:00</div>
-                <div class="progress-bar">
-                    <div class="progress" id="progress"></div>
-                </div>
-                <div class="pomodoro-btns">
-                    <div class="btn-group">
-                        <button id="startPomodoroTimerBtn" class="pomodoro-btn">AVVIA</button>
-                    </div>
-                    <div class="btn-group">
-                        <button id="resetPomodoroBtn" class="pomodoro-btn">RESET</button>
-                    </div>
-                </div>
-                <audio id="beep-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
-            </div>
-        </div>
-
     </div>
 
-    <script type="module" src="Main.js"></script>
-    <script type="module" src="Pomodoro.js"></script>
+    <div class="bottom-panels">
+        <div class="alarm-list">
+            <h3>Sveglie attive</h3>
+            <div id="alarmList"></div>
+        </div>
+        <div class="custom-panel">
+            <h3>Lista Timer</h3>
+            <div id="customPanelContent"></div>
+        </div>
+        <div class="tomato-timer-section">
+            <h3>Timer Pomodoro</h3>
+            <div id="pomodoroTimerDisplay"></div>
+            <button id="startPomodoroBtn" class="pomodoro-btn">Avvia Pomodoro</button>
+        </div>
+    </div>
+
+    <!-- Overlay Pomodoro nascosto -->
+    <div id="pomodoroOverlay" class="pomodoro-overlay" style="display:none;">
+        <div class="container pomodoro-modal">
+            <button id="closePomodoroOverlay" class="close-pomodoro">&times;</button>
+            <h1>Modalità Pomodoro</h1>
+            <div>
+                <label for="work">Durata lavoro (min):</label>
+                <input id="work" type="number" min="1" value="25" />
+                <label for="break">Durata pausa (min):</label>
+                <input id="break" type="number" min="1" value="5" />
+                <label for="cycles">Numero di cicli:</label>
+                <input id="cycles" type="number" min="1" value="4" />
+            </div>
+            <div id="cycle-info"></div>
+            <div id="timer">25:00</div>
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="pomodoro-btns">
+                <div class="btn-group">
+                    <button id="startPomodoroTimerBtn" class="pomodoro-btn">AVVIA</button>
+                </div>
+                <div class="btn-group">
+                    <button id="resetPomodoroBtn" class="pomodoro-btn">RESET</button>
+                </div>
+            </div>
+            <audio id="beep-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="Main.js"></script>
+<script type="module" src="Pomodoro.js"></script>
+<script type="module" src="AnalogClock.js"></script>
+<script>
+    // Gestione cambio tema
+    const themeToggle = document.getElementById('theme-toggle');
+    const root = document.documentElement;
+    const themeLabel = document.getElementById('theme-label');
+    function updateThemeLabel() {
+        themeLabel.textContent = themeToggle.checked ? 'Tema chiaro' : 'Tema scuro';
+    }
+    themeToggle.addEventListener('change', function() {
+        if (this.checked) {
+            root.classList.add('dark-theme');
+        } else {
+            root.classList.remove('dark-theme');
+        }
+        updateThemeLabel();
+    });
+    // Imposta la label corretta all'avvio
+    updateThemeLabel();
+</script>
 </body>
 </html>
