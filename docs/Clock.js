@@ -32,8 +32,4 @@ export class Clock {
         this.displayElement.textContent = `${hours}:${minutes}:${seconds}`; // Mostra l'orario
     }
 
-    // Restituisce l'oggetto Date corrente (utile per estensioni future)
-    getCurrentTime() {
-        return new Date();
-    }
 }

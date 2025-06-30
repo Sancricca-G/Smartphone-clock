@@ -43,16 +43,7 @@ export class Stopwatch {
         this.displayElement.textContent = `${minutes}:${seconds}.${tenths}`;
     }
 
-    // Funzione per ottenere il tempo corrente (per possibili future estensioni)
-    getElapsedTime() {
-        return this.elapsedTime;
-    }
-
-    // Funzione per controllare se  in esecuzione
-    isRunning() {
-        return this.running;
-    }
-
+// Funzione per controllare se  in esecuzione
     getTimeString() {
         // Restituisce il tempo attuale formattato come visualizzato
         const ms = this.elapsedTime;

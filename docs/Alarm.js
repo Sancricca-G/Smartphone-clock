@@ -132,7 +132,7 @@ export class AlarmManager {
     }
 
     checkAlarms() {
-        const now = new Date();
+        new Date();
         const currentTime = Utils.getCurrentTimeString();
         const currentDay = Utils.getCurrentDayName();
 
@@ -201,19 +201,4 @@ export class AlarmManager {
         }
     }
 
-    // Funzioni di utilità
-    getActiveAlarms() {
-        return this.alarms.filter(alarm => alarm.active);
-    }
-
-    getAlarmCount() {
-        return this.alarms.length;
-    }
-
-    clearAll() {
-        this.alarms = [];
-        this.saveAlarms();
-        this.render();
-        this.showStatus('Tutte le sveglie sono state rimosse.', 'success');
-    }
 }
