@@ -1,5 +1,4 @@
-﻿
-/* =========================
+﻿/* =========================
    1. IMPORT FONT
    ========================= */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
@@ -33,7 +32,7 @@
     --text-title: #f3e9dc;
     --btn-main: #8f5c2c;
     --btn-hover: #6e3e1a;
-    --clock-color: #ffe7c2;
+    --clock-color: #F3E9DC;
     --alarm-item-bg: rgba(185, 122, 87, 0.18);
 }
 
