@@ -124,7 +124,7 @@ export class AlarmManager {
     }
 
     startChecking() {
-        // Controlla le sveglie ogni 30 secondi per efficienza
+        // Controlla le sveglie ogni 1.5 secondi
         this.checkInterval = setInterval(() => this.checkAlarms(), 1500);
 
         // Controllo immediato all'avvio
